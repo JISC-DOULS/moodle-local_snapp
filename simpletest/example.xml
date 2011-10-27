@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+    <ModulePrefs title="Test SNAPP Gadget" scrolling="true" author="The Open University">
+        <Require feature="opensocial-0.9" />
+        <Require feature="views" />
+        <Require feature="osapi" />
+        <Require feature="dynamic-height"/>
+    </ModulePrefs>
+    <Content type="html" view="home,canvas,profile"><![CDATA[<!-- The code for Home view is here. -->
+     %%js%%
+
+     <script type="text/javascript">
+ /**
+  * Request for friend information.
+  */
+  function getData() {
+    var idspec = opensocial.newIdSpec({ "userId" : "OWNER", "groupId" : "FRIENDS" });
+    var req = opensocial.newDataRequest();
+    req.add(req.newFetchPersonRequest(opensocial.IdSpec.PersonId.OWNER), "get_owner");
+    req.add(req.newFetchPeopleRequest(idspec), "get_friends");
+    req.send(onLoadFriends);
+    YUI().use('node', function (Y) {
+        Y.one('#friendslist').set("innerHTML", "Getting friends data...");
+    });
+  };
+
+ /**
+  * Parses the response to the friend information request and generates
+  * html to list the friends along with their display name.
+  *
+  * @param {Object} dataResponse Friend information that was requested.
+  */
+  function onLoadFriends(dataResponse) {
+    var owner = dataResponse.get('get_owner').getData();
+        var friends = dataResponse.get('get_friends').getData();
+        var html = 'Friends of '  + owner.getDisplayName();
+        html += ':<br><ul>';
+        if (friends) {
+            friends.each(function(person) {
+              html += '<li>' + person.getDisplayName() + '</li>';
+            });
+        }
+        html += '</ul>';
+        YUI().use('node', function (Y) {
+            Y.one('#friendslist').set("innerHTML", html);
+        });
+        //gadgets.window.adjustHeight();
+  };
+
+  gadgets.util.registerOnLoadHandler(getData);
+
+
+     function wsresponse(ret) {
+        if (typeof ret.content[0].id != 'undefined') {
+             document.getElementById('wscheck').innerHTML += '<br/>Your Moodle user id is:'+ret.content[0].id;
+        }
+
+     };
+
+    //Main Start function - once user map is set then do content!
+    function start(){
+        YUI().use('async-queue', function(Y) {
+            var q = new Y.AsyncQueue(function() {
+                if (typeof mg.usermap != 'undefined') {
+                    if (mg.usermap) {
+                        mg.web_service_call("moodle_user_get_users_by_id", "userids[0]=*", wsresponse, true);
+                        q.stop();
+                    }
+                }
+            });
+            q.defaults.iterations = 40;
+            q.defaults.timeout = 250;
+            q.run();
+        });
+    };
+
+     var mg = new moodle_gadget("%%moodleurl%%");
+
+     //Check user mapping between gadget and moodle
+     gadgets.util.registerOnLoadHandler(function(){mg.user_map_exists()});
+     gadgets.util.registerOnLoadHandler(start);
+  </script>
+
+<div>Home view for Test.</div>
+<div>moodleurl:%%moodleurl%%</div>
+<div>Friends:</div>
+<div id="friendslist"> </div>
+<div id="usermap"> </div>
+<div id="linktoauthorise"> </div>
+<div id="wscheck"> </div>
+]]></Content>
+</Module>

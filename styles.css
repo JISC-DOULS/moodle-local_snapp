@@ -1,0 +1,32 @@
+/*Admin screen settings*/
+
+#snapp-newcert, #snapp-newkey, #snapp-newcont {
+    margin-left:auto;
+    margin-right:auto;
+    width:49%;
+    background-color:#E1E1DF;
+}
+
+#snapp-newcert form .required, #snapp-newkey form .required{
+    text-align:left;
+}
+#snapp-newcert form .fitemtitle, #snapp-newkey form .fitemtitle {
+    /*word-wrap: break-word;*/
+    display:block;
+    width:25%;
+    padding-right:1em;
+}
+
+/*Authorise*/
+#authorisepage form input[type='submit'] {
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-top: .2em;
+    padding-bottom: .2em;
+    margin-right: 1em;
+}
+
+/*Manageuser*/
+.snapp-hidden {
+    display: none;
+}

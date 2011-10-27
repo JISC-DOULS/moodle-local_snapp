@@ -1,0 +1,12 @@
+<Files call_ws.php>
+DISABLE_SAMS
+</Files>
+<Files gadgetxml.php>
+DISABLE_SAMS
+</Files>
+<Files mapuser.php>
+DISABLE_SAMS
+</Files>
+<Files lib.js>
+DISABLE_SAMS
+</Files>

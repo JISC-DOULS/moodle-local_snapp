@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>Administrator/installation notes</title>
+</head>
+<body>
+<h1>Installation &amp; Administration notes for local/snapp</h1>
+<h2>Functionality overview</h2>
+<p>The local/snapp plugin (Social Network Application plugin) facilitates the connection of OpenSocial (Google) Gadgets to Moodle. </p>
+<p>The plugin provides the following features:</p>
+<ul>
+<li>'Serving' of Gadget XML with dynamic information e.g. Moodle URL</li>
+<li>Exposing of Moodle web services to gadgets in a secure manner</li>
+<li>Mapping of Moodle users to gadget users to ensure data integrity</li>
+<li>Verification of request validity utilising OAuth security protocol</li>
+<li>JavaScript library to facilitate connection from gadgets to plugin</li>
+<li>Administrative control over access to services</li>
+</ul>
+<h2>Installation</h2>
+<p>Copy the snapp directory into your Moodle 'local' directory.</p>
+<p>Requirements:</p>
+<ul><li>Moodle 2</li><li>PHP JSON support enabled</li><li>PHP OpenSSL support enabled</li></ul>
+<h2>Enabling the plugin</h2>
+<p>Administration of the plugin settings is handled in the Moodle admin menu under 'Site administration' &gt; 'Plugins' &gt; 'Local plugins' &gt; 'Social Network Application plugin'. There are a number of administration screens within this section that handle the configuration and management of the plugin.</p>
+<ol>
+<li>Set the 'enabled' configuration setting to checked either on installation or via the 'Configuration settings' page.</li>
+<li>Set the accesskey and secretkey settings either on installation or via the 'Configuration settings' page. This will set a security Salt and Key that will be used to provide secure tokens for some of the functions of the plugin. You can leave these empty - but then a default value will be used which is not secure.</li>
+</ol>
+<h2>'Serving' gadgets from your Moodle installation</h2>
+<p>The plugin provides functionality to 'serve' gadget definition code (XML) from the Moodle installation. The main purpose of this is to expose the correct location (URL) of your Moodle install to the gadget so that calls to the plugin are directed correctly.</p>
+<p>The plugin can provide any gadget definition XML files that reside in the local directory. Your Moodle installation must be at a publically accessible location (unless the gadget container you are deploying to is internal).</p>
+<p>For example, the test gadget can be accessed via: #YOUR PUBLIC MOODLE URL#/local/snapp/gadgetserv/gadgetxml.php?gurl=snapp/simpletest/example.xml</p>
+<h2>Enabling connection from gadgets</h2>
+<p>Connection to the plugin from gadgets requires that the gadgets sign all requests using the OAuth protocol. These requests can be signed either using a <a href="https://opensocialresources.appspot.com/certificates" title="list of open social public keys">public</a> or private key and in order for the plugin to verify that requests are genuine it may be necessary to set up the plugin with information on these keys.</p>
+<p>When deploying a gadget to a web site, this site is known as a 'container'. Container information and associated public and private keys are managed in the 'Manage authorisation' screen within the admin settings for the plugin.</p>
+<h3>Setting up authorisation for different scenarios:</h3>
+<ol>
+<li><strong>Deploying gadgets to iGoogle or a Google Site</strong><br/>
+You don't need to make any changes to configuration settings (unless the gadgets use private keys - see point 4).<br/>
+Google use a public key to sign requests, this is not hosted by Google; so a copy has been made and installed with the gadget.
+</li>
+<li><strong>Deploying gadgets to a container that has an exposed public key</strong><br/>
+In this instance you are deploying gadgets to a container that uses a public certificate hosted at the address stipulated in the 'xoauth_signature_publickey' parameter sent with the request.<br/>
+In this instance you do not have to make any configuration changes as the plugin will automatically download the certificate.
+</li>
+<li><strong>Deploying gadgets to a container that does not have an exposed public key</strong><br/>
+In this instance you are deploying gadgets to a container that uses a public certificate that is NOT hosted at the address stipulated in the 'xoauth_signature_publickey' parameter sent with the request.<br/>
+In this instance you must add the certificate manually:
+<ol>
+<li>Find the certificate text either from the container developers' information or from the <a href="https://opensocialresources.appspot.com/certificates">list of opensocial certificates</a> (it will look something like "-----BEGIN CERTIFICATE-----")</li>
+<li>Add a new container on the Manage authorisation screen, the name should match the oauth_consumer_key for the container site e.g. friendconnect.google.com</li>
+<li>Add a new certificate on the Manage authorisation screen using the obtained certificate text e.g. Open Social container: friendconnect.google.com , Certificate name: pub.1229714852.-8759618427808416822.cer , Certificate contents: -----BEGIN CERTIFICATE-----...</li>
+</ol>
+</li>
+<li><strong>Deploying gadgets that use a private key/secret</strong><br/>
+In this instance the gadget will be verified with the container in some way that will provide you with a consumer key and secret (these use HMAC-SHA1 OAuth, rather than the RSA-SHA1 method used in public keys). This is a much more restricted method of authorisation as it means that you can stop other containers from using your gadget.<br/>
+For example, you can verify 'gadget ownership' for Google containers (iGoogle etc) at <a href="https://www.google.com/gadgets/directory/verify">https://www.google.com/gadgets/directory/verify</a> (you will need to add some verification text to the gadget code and set its request signing to use HMAC).<br/>
+Add a new consumer key in the Manage authorisation screen; using the consumer key and secret supplied to you by the container (a valid container will need to be set up in the plugin prior to this, see point 3.2).
+</li>
+</ol>
+<h2>Enabling connection to Moodle web services</h2>
+<p>In order for the plugin to connect to Moodle Web Services some configuration of Moodle and the plugin is required.</p>
+<p>First, setup Web Services in Moodle as directed in the 'Plugins' &gt; 'Web services' &gt; 'Overview' using the 'One system controlling Moodle with a token' directions (<a href="http://docs.moodle.org/en/How_to_enable_web_services_for_an_external_system">more info at moodle.org</a>).</p>
+<p>You should use 'JSON' as the web service type. Select only the web service functions that are used by gadgets.</p>
+<p>Within the plugin 'Configuration settings' page set the wsuser drop-down setting to match the user and name of the web service that you configured for use by the gadgets.</p>
+<h2>Deploying &amp; testing gadgets</h2>
+<p>iGoogle is the recommended gadget container. Add the test gadget to an iGoogle page by using the 'Add stuff' link, 'Add feed or gadget'.</p>
+<p>The test gadget can be added by using the URL: #YOUR PUBLIC MOODLE URL#/local/snapp/gadgetserv/gadgetxml.php?gurl=snapp/simpletest/example.xml</p>
+<h2>Managing users connections to gadgets</h2>
+<p>When a user accesses a gadget that uses a Moodle web service that returns personal information they will need to create a 'mapping' between their gadget site user and their Moodle user. This 'mapping' is used to ensure that their personal information from Moodle is only ever exposed to them and cannot be maliciously requested by another user.</p>
+<p>It is possible for these connections to be managed either centrally or personally by the user themselves.</p>
+<p>To manage centrally go to the 'Manage users' screen of the plugin administrative settings section.</p>
+<p>A user can manage their own connections by going to the local/snapp/manageuser.php page.</p>
+<h2>Capabilities</h2>
+<ul>
+<li>local/snapp:administer : Administer elements of the plugin</li>
+<li>local/snapp:vieweditusermapping : View and delete other users connections to gadget containers</li>
+</ul>
+<h2>License</h2>
+<p>Copyright: 2011 The Open University (www.open.ac.uk) and JISC (www.jisc.ac.uk)
+<br/>
+License: http://www.gnu.org/copyleft/gpl.html GNU Public License</p>
+<p>OAuth php library (oauth/oauth.php) used without alteration from: <a href="http://code.google.com/p/oauth/">http://code.google.com/p/oauth/</a> Revision 1243  - used under <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a></p>
+<h2>More information</h2>
+<p><a href="http://www.open.ac.uk/blogs/douls/">Original project (DOULS) website</a></p>
+<p><a href="http://www.google.com/webmasters/gadgets/">http://www.google.com/webmasters/gadgets/</a></p>
+<p><a href="http://wiki.opensocial.org/index.php?title=OAuth_Use_Cases">http://wiki.opensocial.org/index.php?title=OAuth_Use_Cases</a></p>
+</body>
+</html>

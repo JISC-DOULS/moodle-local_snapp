@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/snapp/db" VERSION="20101101" COMMENT="XMLDB file for Moodle local/snapp"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="local_snapp_containers" COMMENT="Open social container list" NEXT="local_snapp_certs">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="name"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="enabled"/>
+        <FIELD NAME="enabled" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="false" DEFAULT="1" SEQUENCE="false" PREVIOUS="name"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="name" UNIQUE="true" FIELDS="name"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_snapp_certs" COMMENT="Public and private certificates to validate opensocial Oauth signed requests" PREVIOUS="local_snapp_containers" NEXT="local_snapp_users">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="containerid"/>
+        <FIELD NAME="containerid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" COMMENT="Container name as discovered from 'opensocial_container'" PREVIOUS="id" NEXT="keyname"/>
+        <FIELD NAME="keyname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the certificate as found in 'xoauth_signature_publickey'" PREVIOUS="containerid" NEXT="cert"/>
+        <FIELD NAME="cert" TYPE="text" LENGTH="small" NOTNULL="true" SEQUENCE="false" COMMENT="Certificate text" PREVIOUS="keyname"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="container"/>
+        <KEY NAME="container" TYPE="foreign" FIELDS="containerid" REFTABLE="local_snapp_containers" REFFIELDS="id" PREVIOUS="primary"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="keyname" UNIQUE="false" FIELDS="keyname"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_snapp_users" COMMENT="Table detailing users that have confirmed mapping to an open social container" PREVIOUS="local_snapp_certs" NEXT="local_snapp_keys">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" COMMENT="moodle user id" PREVIOUS="id" NEXT="containerid"/>
+        <FIELD NAME="containerid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" PREVIOUS="userid" NEXT="ownerid"/>
+        <FIELD NAME="ownerid" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="containerid" NEXT="added"/>
+        <FIELD NAME="added" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" PREVIOUS="ownerid"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="userid"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" PREVIOUS="primary" NEXT="container"/>
+        <KEY NAME="container" TYPE="foreign" FIELDS="containerid" REFTABLE="local_snapp_containers" REFFIELDS="id" PREVIOUS="userid"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="owner" UNIQUE="false" FIELDS="ownerid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_snapp_keys" COMMENT="Consumer secret keys for use with verified gadgets" PREVIOUS="local_snapp_users">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="consumerkey"/>
+        <FIELD NAME="consumerkey" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="secret"/>
+        <FIELD NAME="secret" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="consumer secret" PREVIOUS="consumerkey" NEXT="containerid"/>
+        <FIELD NAME="containerid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" PREVIOUS="secret" NEXT="info"/>
+        <FIELD NAME="info" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Any info you like (within 255 chars) about the key to identify what it is used for" PREVIOUS="containerid"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="container"/>
+        <KEY NAME="container" TYPE="foreign" FIELDS="containerid" REFTABLE="local_snapp_containers" REFFIELDS="id" PREVIOUS="primary"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="consumer" UNIQUE="true" FIELDS="consumerkey"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

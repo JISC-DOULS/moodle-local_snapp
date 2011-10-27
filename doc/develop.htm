@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>Developer notes</title>
+</head>
+<body>
+<h1>Developer notes for local/snapp</h1>
+<h2>Developing gadgets that connect to the plugin</h2>
+<h3>Serving Gadget XML using the plugin</h3>
+<p>The plugin provides functionality to 'serve' gadget definition code (XML) from the Moodle installation. The main purpose of this is to expose the correct location (URL) of your Moodle install to the gadget so that calls to the plugin are directed correctly.</p>
+<p>The plugin can provide any gadget definition XML files that reside in the local directory. Your Moodle installation must be at a publically accessible location (unless the gadget container you are deploying to is internal).</p>
+<p>For example, the test gadget can be accessed via: #YOUR PUBLIC MOODLE URL#/local/snapp/gadgetserv/gadgetxml.php?gurl=snapp/simpletest/example.xml</p>
+<p>The gadgetxml.php file will replace the following strings in your gadget definition XML:</p>
+<ol>
+<li>%%moodleurl%% - Replaced with $CFG-&gt;wwwroot</li>
+</ol>
+<p>String replacement is handled in snapp_gadget::replace_placeholders in the snapp_lib.php file.</p>
+<h3>Using the Gadget JavaScript lib to connect to the plugin</h3>
+<h3>Using Gadget Services directly</h3>
+<h2>Developing the plugin code</h2>
+<h3>Key libraries</h3>
+<p>The main functions of the plugin are handled in separate classes located in the snapp_lib.php.</p>
+<ul>
+<li>snapp_lib : Manage plugin config settings, container management and general helper functions.<br/>Create an instance when dealing with configuration settings (sending parameter true to load all config settings in one database call).<br/>Other functions can be called statically.</li>
+<li>snapp_security : Handles all aspects of connecting to the plugin securely; including, configuration and OAuth request verification.</li>
+<li>snapp_gadgetxml : Helper functions for the gadgetxml processing + serving file.</li>
+<li>snapp_mapuser : Helper functions for gadget/Moodle user mapping.</li>
+</ul>
+<h3>Admin settings &amp; screens</h3>
+<p>The main plugin configuration settings are defined in settings.php.</p>
+<p>Other configuration screens are:</p>
+<ul>
+<li>admin_auth.php - Manage authorisation screen</li>
+<li>admin_users.php - Manage users screen</li>
+<li>admin_form.php - Forms used in the admin screens</li>
+</ul>
+<h3>Gadget Services code</h3>
+<h2>More information</h2>
+</body>
+</html>
