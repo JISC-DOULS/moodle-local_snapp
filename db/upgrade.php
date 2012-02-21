@@ -14,20 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * SNAP Version - when updating version update the doc/releases.txt with info
+ * Database upgrades.
  *
- * @package    local
+ * @package local
  * @subpackage snapp
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2012 The Open University
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-////////////////////////////////////////////////////////////////////////////////
-//  Code fragment to define the version
-//  This fragment is called by moodle_needs_upgrading() and /admin/index.php
-////////////////////////////////////////////////////////////////////////////////
+function xmldb_local_snapp_upgrade($oldversion=0) {
 
-$plugin->version  = 2011011401;   // The (date) version of this module
-$plugin->requires = 2010080300;   // Requires this Moodle version
+    global $CFG, $DB;
+
+    $dbman = $DB->get_manager(); /// loads ddl manager and xmldb classes
+
+    if ($oldversion < 2011011401) {
+
+        //Remove the oujson capabilitiy from system as cannot uninstall web service protocols
+        capabilities_cleanup('webservice_oujson');
+
+        upgrade_plugin_savepoint(true, 2011011401, 'local', 'snapp');
+    }
+
+    return true;
+}

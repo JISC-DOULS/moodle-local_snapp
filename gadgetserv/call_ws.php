@@ -207,18 +207,8 @@ $_REQUEST['wstoken'] = $wstoken;
 $_REQUEST['wsfunction'] = $wsfunction;
 $_REQUEST = array_merge($_REQUEST, $wsparamsarray);//add in the params specified
 
-//Get webservice to use (Temporary call to oujson until 2.2)
-$webservice = '';
-if (file_exists($CFG->dirroot . '/webservice/json/locallib.php')) {
-    $webservice = 'json';
-} else if (file_exists($CFG->dirroot . '/webservice/oujson/locallib.php')) {
-    $webservice = 'oujson';
-} else {
-    if (debugging()) {
-        $debuginfo .= "\rJSON web service not available.";
-    }
-    callws_error('wssetuperror', $debuginfo);
-}
+//Use rest webservice - Only installed on 2.2+
+$webservice = 'rest';
 //Call JSON web service directly (using the fudged $_REQUEST)
 require_once("$CFG->dirroot/webservice/$webservice/locallib.php");
 
@@ -230,7 +220,7 @@ if (!webservice_protocol_is_enabled($webservice)) {
 }
 add_to_log(SITEID, 'local', 'snapp', '', $wsfunction, 0, $userid);
 $classtocall = 'webservice_' . $webservice . '_server';
-$server = new $classtocall(WEBSERVICE_AUTHMETHOD_PERMANENT_TOKEN);
+$server = new $classtocall(WEBSERVICE_AUTHMETHOD_PERMANENT_TOKEN, 'json');
 $server->run();
 exit;
 

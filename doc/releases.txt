@@ -1,3 +1,5 @@
 Release version notes:
 
 2011011400 : Initial version
+
+2011011401 : Upgrade to stop using custom web service protocol and start using rest(json)
