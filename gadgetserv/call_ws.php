@@ -202,10 +202,10 @@ if ($wstoken == '') {
 }
 
 //Create a new global request array ready to use in webservice
-$_REQUEST = array();
-$_REQUEST['wstoken'] = $wstoken;
-$_REQUEST['wsfunction'] = $wsfunction;
-$_REQUEST = array_merge($_REQUEST, $wsparamsarray);//add in the params specified
+$_GET = array();
+$_GET['wstoken'] = $wstoken;
+$_GET['wsfunction'] = $wsfunction;
+$_GET = array_merge($_GET, $wsparamsarray);//add in the params specified
 
 //Use rest webservice - Only installed on 2.2+
 $webservice = 'rest';

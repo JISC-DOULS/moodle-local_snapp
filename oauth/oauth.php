@@ -196,7 +196,7 @@ abstract class OAuthSignatureMethod_RSA_SHA1 extends OAuthSignatureMethod {
     return base64_encode($signature);
   }
 
-  public function check_signature(&$request, $consumer, $token, $signature) {
+  public function check_signature($request, $consumer, $token, $signature) {
     $decoded_sig = base64_decode($signature);
 
     $base_string = $request->get_signature_base_string();
