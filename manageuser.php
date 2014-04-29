@@ -51,7 +51,7 @@ $userid = optional_param('userid', 0, PARAM_INT);
 
 if ($userid != 0) {
     //we want to view/ammend someone else's mapping - need permission to do this
-    require_capability('local/snapp:vieweditusermapping', get_context_instance(CONTEXT_SYSTEM));
+    require_capability('local/snapp:vieweditusermapping', context_system::instance());
 
     //check the requested user exists
     if (!$user = $DB->get_record('user', array('id'=>$userid))) {
@@ -70,12 +70,12 @@ $PAGE->requires->css('/local/snapp/styles.css');
 //Different context depending on how accessed
 if (!isset($params['userid'])) {
     //editing your own - show user profile stuff
-    $context = get_context_instance(CONTEXT_USER, $USER->id);
+    $context = context_user::instance($USER->id);
     $PAGE->set_context($context);
     $PAGE->set_pagelayout('mydashboard');
 } else {
     //editing someone elses - so an admin type person
-    $PAGE->set_context(get_context_instance(CONTEXT_SYSTEM));
+    $PAGE->set_context(context_system::instance());
     $PAGE->set_pagelayout('admin');
     admin_externalpage_setup('snapp_manageusers');
 }

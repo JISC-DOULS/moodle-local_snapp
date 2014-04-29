@@ -32,7 +32,7 @@ require_once($CFG->libdir.'/tablelib.php');
 
 admin_externalpage_setup('snapp_manageusers');
 
-$context = get_context_instance(CONTEXT_SYSTEM);
+$context = context_system::instance();
 require_capability('local/snapp:vieweditusermapping', $context);
 
 require_once(dirname(__FILE__).'/snapp_lib.php');

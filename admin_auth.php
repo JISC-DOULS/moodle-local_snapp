@@ -32,7 +32,7 @@ require_once(dirname(__FILE__).'/admin_form.php');
 
 admin_externalpage_setup('snapp_manage');
 
-$context = get_context_instance(CONTEXT_SYSTEM);
+$context = context_system::instance();
 require_capability('local/snapp:administer', $context);
 
 require_once(dirname(__FILE__).'/snapp_lib.php');

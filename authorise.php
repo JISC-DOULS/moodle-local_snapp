@@ -40,7 +40,7 @@ global $CFG, $USER;
 require_login(null, false);//In theory this should stop auto-login as guest?
 
 //check capability (should be prevented for guests)
-$context = get_context_instance(CONTEXT_SYSTEM);
+$context = context_system::instance();
 
 if (isguestuser()) {
     //Guests can't use this feature

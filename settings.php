@@ -31,11 +31,11 @@
  * Links to admin external pages used to manage plugin (local/snapp:administer capability)
  */
 
-require_once(dirname(__FILE__).'/snapp_lib.php');
-
 defined('MOODLE_INTERNAL') || die;
 
 if ($hassiteconfig) {//Stops errors when tree not available, but still allows external pages to work
+
+    require_once(dirname(__FILE__).'/settingslib.php');
 
     //SNAPP tree
     $ADMIN->add('localplugins', new admin_category('local_snapp', get_string('socialnetworkapps', 'local_snapp')));
@@ -66,11 +66,8 @@ if ($hassiteconfig) {//Stops errors when tree not available, but still allows ex
 
     $configpage->add($secretkey);
 
-    //get all the external_services_users records (nicely formatted with details)
-    $wsusers = snapp_lib::return_external_services_users();
-
-    $wsuser = new admin_setting_configselect('wsuser', get_string('snapp_admin_wsuser', 'local_snapp'),
-                get_string('snapp_admin_wsuser_desc', 'local_snapp'), 0, $wsusers);
+    $wsuser = new local_snapp_configselect('wsuser', get_string('snapp_admin_wsuser', 'local_snapp'),
+                get_string('snapp_admin_wsuser_desc', 'local_snapp'), 0, null);
     $wsuser->plugin = 'local_snapp';
     $configpage->add($wsuser);
 
